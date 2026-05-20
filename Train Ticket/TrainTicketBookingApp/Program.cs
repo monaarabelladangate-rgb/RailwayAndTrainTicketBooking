@@ -534,11 +534,19 @@ namespace TrainTicketBookingApp
                     string time = t["departure_time"] + " - " + t["arrival_time"];
 
                     gridTrains.Rows.Add(t["id"], t["train_code"], t["train_name"], route, time, t["fare"], t["available_seats"]);
-                    cboTrain.Items.Add(new ComboItem(t["train_code"] + " - " + t["train_name"] + " / " + route, t["id"].ToString()));
+                   
                 }
             }
 
             if (cboTrain.Items.Count > 0) cboTrain.SelectedIndex = 0;
+        }
+
+        private string GetSelectedTrainId()
+        {
+            if (cboTrain.SelectedItem is ComboItem item)
+                return item.Value;
+
+            return null;
         }
 
         private void LoadTicketsTodo()
