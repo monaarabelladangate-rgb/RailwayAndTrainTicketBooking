@@ -1,4 +1,20 @@
 <?php
+/*
+    RAILWAY STARTER API
+
+    This file is intentionally incomplete.
+    It already creates SQLite tables and supports basic train listing.
+
+    Students should complete the missing API actions step by step:
+    - register_passenger
+    - book_ticket
+    - list_tickets
+    - update_ticket_status
+    - add_train
+    - update_train
+    - delete_train
+*/
+
 header('Content-Type: application/json');
 header('Access-Control-Allow-Origin: *');
 header('Access-Control-Allow-Methods: GET, POST, OPTIONS');
@@ -10,6 +26,7 @@ $dbFile = __DIR__ . '/railway.sqlite';
 
 function db() {
     global $dbFile;
+
     $pdo = new PDO('sqlite:' . $dbFile);
     $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
@@ -64,7 +81,6 @@ function db() {
                                VALUES(?,?,?,?,?,?,?,?,?,?)");
         $stmt->execute(['RLY-101','North Express','Manila Central','Baguio Terminal','06:00 AM','12:30 PM',850,80,'Active',date('Y-m-d H:i:s')]);
         $stmt->execute(['RLY-202','Coastal Line','Cebu Station','Davao Station','09:00 AM','05:00 PM',1250,90,'Active',date('Y-m-d H:i:s')]);
-        $stmt->execute(['RLY-303','Metro Shuttle','Pasay Station','Batangas Station','08:00 AM','11:00 AM',450,100,'Active',date('Y-m-d H:i:s')]);
     }
 
     return $pdo;
@@ -85,7 +101,9 @@ $pdo = db();
 $action = $_GET['action'] ?? $_POST['action'] ?? 'ping';
 
 try {
-    if ($action === 'ping') ok(['message' => 'Railway API is running']);
+    if ($action === 'ping') {
+        ok(['message' => 'Railway starter API is running']);
+    }
 
     if ($action === 'login') {
         $email = strtolower(trim($_POST['email'] ?? ''));
@@ -101,26 +119,6 @@ try {
         ok(['message' => 'Login successful.', 'user' => $user]);
     }
 
-    if ($action === 'register_passenger') {
-        $name = trim($_POST['name'] ?? '');
-        $email = strtolower(trim($_POST['email'] ?? ''));
-        $password = trim($_POST['password'] ?? '');
-        $contact = trim($_POST['contact'] ?? '');
-
-        if ($name === '' || $email === '' || $password === '') fail('Name, email, and password are required.');
-        if (!filter_var($email, FILTER_VALIDATE_EMAIL)) fail('Valid email is required.');
-        if (strlen($password) < 6) fail('Password must be at least 6 characters.');
-
-        $stmt = $pdo->prepare("SELECT id FROM users WHERE email=? LIMIT 1");
-        $stmt->execute([$email]);
-        if ($stmt->fetch()) fail('Email is already registered.');
-
-        $stmt = $pdo->prepare("INSERT INTO users(name,email,password,role,contact,created_at) VALUES(?,?,?,?,?,?)");
-        $stmt->execute([$name,$email,$password,'passenger',$contact,date('Y-m-d H:i:s')]);
-
-        ok(['message' => 'Passenger account created.']);
-    }
-
     if ($action === 'list_trains') {
         $rows = $pdo->query("SELECT * FROM trains ORDER BY id DESC")->fetchAll(PDO::FETCH_ASSOC);
         ok(['trains' => $rows]);
@@ -132,182 +130,32 @@ try {
         ok(['trains' => $stmt->fetchAll(PDO::FETCH_ASSOC)]);
     }
 
+    if ($action === 'register_passenger') {
+        fail('Registration is not implemented yet. Follow the commit guide.');
+    }
+
     if ($action === 'add_train') {
-        $stmt = $pdo->prepare("INSERT INTO trains(train_code,train_name,origin_station,destination_station,departure_time,arrival_time,fare,available_seats,status,created_at)
-                               VALUES(?,?,?,?,?,?,?,?,?,?)");
-
-        $stmt->execute([
-            trim($_POST['train_code'] ?? ''),
-            trim($_POST['train_name'] ?? ''),
-            trim($_POST['origin_station'] ?? ''),
-            trim($_POST['destination_station'] ?? ''),
-            trim($_POST['departure_time'] ?? ''),
-            trim($_POST['arrival_time'] ?? ''),
-            (float)($_POST['fare'] ?? 0),
-            (int)($_POST['available_seats'] ?? 0),
-            trim($_POST['status'] ?? 'Active'),
-            date('Y-m-d H:i:s')
-        ]);
-
-        ok(['message' => 'Train saved.']);
+        fail('Add train is not implemented yet. Follow the commit guide.');
     }
 
     if ($action === 'update_train') {
-        $id = (int)($_POST['id'] ?? 0);
-        if ($id <= 0) fail('Invalid train ID.');
-
-        $stmt = $pdo->prepare("UPDATE trains SET train_code=?, train_name=?, origin_station=?, destination_station=?, departure_time=?, arrival_time=?, fare=?, available_seats=?, status=? WHERE id=?");
-        $stmt->execute([
-            trim($_POST['train_code'] ?? ''),
-            trim($_POST['train_name'] ?? ''),
-            trim($_POST['origin_station'] ?? ''),
-            trim($_POST['destination_station'] ?? ''),
-            trim($_POST['departure_time'] ?? ''),
-            trim($_POST['arrival_time'] ?? ''),
-            (float)($_POST['fare'] ?? 0),
-            (int)($_POST['available_seats'] ?? 0),
-            trim($_POST['status'] ?? 'Active'),
-            $id
-        ]);
-
-        ok(['message' => 'Train updated.']);
+        fail('Update train is not implemented yet. Follow the commit guide.');
     }
 
     if ($action === 'delete_train') {
-        $id = (int)($_POST['id'] ?? 0);
-        if ($id <= 0) fail('Invalid train ID.');
-
-        $stmt = $pdo->prepare("DELETE FROM trains WHERE id=?");
-        $stmt->execute([$id]);
-
-        ok(['message' => 'Train deleted.']);
-    }
-
-    if ($action === 'list_passengers') {
-        $stmt = $pdo->prepare("SELECT id,name,email,contact,created_at FROM users WHERE role='passenger' ORDER BY id DESC");
-        $stmt->execute();
-        ok(['passengers' => $stmt->fetchAll(PDO::FETCH_ASSOC)]);
+        fail('Delete train is not implemented yet. Follow the commit guide.');
     }
 
     if ($action === 'book_ticket') {
-        $passengerId = (int)($_POST['passenger_id'] ?? 0);
-        $trainId = (int)($_POST['train_id'] ?? 0);
-        $travelDate = trim($_POST['travel_date'] ?? '');
-        $seatCount = max(1, (int)($_POST['seat_count'] ?? 1));
-
-        if ($passengerId <= 0 || $trainId <= 0 || $travelDate === '') fail('Passenger, train, and travel date are required.');
-
-        $pdo->beginTransaction();
-
-        try {
-            $stmt = $pdo->prepare("SELECT fare, available_seats, status FROM trains WHERE id=? LIMIT 1");
-            $stmt->execute([$trainId]);
-            $train = $stmt->fetch(PDO::FETCH_ASSOC);
-
-            if (!$train) {
-                $pdo->rollBack();
-                fail('Train not found.');
-            }
-            if ($train['status'] !== 'Active') {
-                $pdo->rollBack();
-                fail('Train is not active.');
-            }
-            if ((int)$train['available_seats'] < $seatCount) {
-                $pdo->rollBack();
-                fail('Not enough available seats.');
-            }
-
-            $total = (float)$train['fare'] * $seatCount;
-
-            $stmt = $pdo->prepare("UPDATE trains SET available_seats = available_seats - ? WHERE id=? AND available_seats >= ?");
-            $stmt->execute([$seatCount, $trainId, $seatCount]);
-
-            if ($stmt->rowCount() !== 1) {
-                $pdo->rollBack();
-                fail('Not enough available seats.');
-            }
-
-            $stmt = $pdo->prepare("INSERT INTO tickets(passenger_id,train_id,travel_date,seat_count,total_amount,booking_status,payment_status,created_at)
-                                   VALUES(?,?,?,?,?,?,?,?)");
-            $stmt->execute([$passengerId,$trainId,$travelDate,$seatCount,$total,'Pending','Unpaid',date('Y-m-d H:i:s')]);
-
-            $ticketId = (int)$pdo->lastInsertId();
-            $pdo->commit();
-
-            ok(['message' => 'Ticket request submitted.', 'ticket_id' => $ticketId]);
-        } catch (Exception $e) {
-            if ($pdo->inTransaction()) $pdo->rollBack();
-            throw $e;
-        }
+        fail('Ticket booking is not implemented yet. Follow the commit guide.');
     }
 
     if ($action === 'list_tickets') {
-        $passengerId = (int)($_GET['passenger_id'] ?? 0);
-
-        $sql = "SELECT tickets.*, users.name AS passenger_name, users.email AS passenger_email, trains.train_code, trains.train_name, trains.origin_station, trains.destination_station
-                FROM tickets
-                JOIN users ON users.id=tickets.passenger_id
-                JOIN trains ON trains.id=tickets.train_id";
-
-        if ($passengerId > 0) {
-            $stmt = $pdo->prepare($sql . " WHERE tickets.passenger_id=? ORDER BY tickets.id DESC");
-            $stmt->execute([$passengerId]);
-            ok(['tickets' => $stmt->fetchAll(PDO::FETCH_ASSOC)]);
-        }
-
-        $rows = $pdo->query($sql . " ORDER BY tickets.id DESC")->fetchAll(PDO::FETCH_ASSOC);
-        ok(['tickets' => $rows]);
+        fail('Ticket listing is not implemented yet. Follow the commit guide.');
     }
 
     if ($action === 'update_ticket_status') {
-        $id = (int)($_POST['id'] ?? 0);
-        $bookingStatus = trim($_POST['booking_status'] ?? '');
-        $paymentStatus = trim($_POST['payment_status'] ?? '');
-
-        if ($id <= 0) fail('Invalid ticket ID.');
-        if (!in_array($bookingStatus, ['Pending','Confirmed','Cancelled'], true)) fail('Invalid booking status.');
-        if (!in_array($paymentStatus, ['Unpaid','Paid'], true)) fail('Invalid payment status.');
-
-        $pdo->beginTransaction();
-
-        try {
-            $stmt = $pdo->prepare("SELECT train_id, seat_count, booking_status FROM tickets WHERE id=? LIMIT 1");
-            $stmt->execute([$id]);
-            $ticket = $stmt->fetch(PDO::FETCH_ASSOC);
-
-            if (!$ticket) {
-                $pdo->rollBack();
-                fail('Ticket not found.');
-            }
-
-            $oldStatus = $ticket['booking_status'];
-            $trainId = (int)$ticket['train_id'];
-            $seatCount = (int)$ticket['seat_count'];
-
-            if ($oldStatus !== 'Cancelled' && $bookingStatus === 'Cancelled') {
-                $stmt = $pdo->prepare("UPDATE trains SET available_seats = available_seats + ? WHERE id=?");
-                $stmt->execute([$seatCount, $trainId]);
-            }
-
-            if ($oldStatus === 'Cancelled' && $bookingStatus !== 'Cancelled') {
-                $stmt = $pdo->prepare("UPDATE trains SET available_seats = available_seats - ? WHERE id=? AND available_seats >= ?");
-                $stmt->execute([$seatCount, $trainId, $seatCount]);
-
-                if ($stmt->rowCount() !== 1) {
-                    $pdo->rollBack();
-                    fail('Not enough available seats to restore this ticket.');
-                }
-            }
-
-            $stmt = $pdo->prepare("UPDATE tickets SET booking_status=?, payment_status=? WHERE id=?");
-            $stmt->execute([$bookingStatus,$paymentStatus,$id]);
-
-            $pdo->commit();
-            ok(['message' => 'Ticket status updated.']);
-        } catch (Exception $e) {
-            if ($pdo->inTransaction()) $pdo->rollBack();
-            throw $e;
-        }
+        fail('Ticket status update is not implemented yet. Follow the commit guide.');
     }
 
     fail('Invalid action.');
