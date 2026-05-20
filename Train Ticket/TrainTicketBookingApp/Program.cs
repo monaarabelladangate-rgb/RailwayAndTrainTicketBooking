@@ -519,16 +519,9 @@ namespace TrainTicketBookingApp
 
         private void LoadTrains()
         {
-            if (!result.ContainsKey("user") || result["user"] == null)
-                throw new Exception("Invalid login response from server.");
-
-            Dictionary<string, object> user = result["user"] as Dictionary<string, object>;
-            if (user == null)
-                throw new Exception("User data is corrupted.");
-            ArrayList rows = null;
-
-            if (result.ContainsKey("trains"))
-                rows = result["trains"] as ArrayList;
+            Dictionary<string, object> result = GetApi("action=list_active_trains");
+            ArrayList rows = result["trains"] as ArrayList;
+            
             gridTrains.Columns.Clear();
             gridTrains.Rows.Clear();
 
