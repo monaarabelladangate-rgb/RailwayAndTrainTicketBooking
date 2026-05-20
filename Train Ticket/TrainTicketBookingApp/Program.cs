@@ -501,8 +501,10 @@ namespace TrainTicketBookingApp
         private void LoadTrains()
         {
             Dictionary<string, object> result = GetApi("action=list_active_trains");
-            ArrayList rows = result["trains"] as ArrayList;
+            ArrayList rows = null;
 
+            if (result.ContainsKey("trains"))
+                rows = result["trains"] as ArrayList;
             gridTrains.Columns.Clear();
             gridTrains.Rows.Clear();
 
