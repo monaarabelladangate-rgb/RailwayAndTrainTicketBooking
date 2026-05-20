@@ -226,7 +226,7 @@ namespace TrainTicketBookingApp
                 PassengerForm main = new PassengerForm(id, name, email);
                 main.FormClosed += delegate
                 {
-                    if (Convert.ToString(main.Tag) == "logout")
+                    if (main.Tag != null && main.Tag.ToString() == "logout")
                     {
                         txtPassword.Clear();
                         lblStatus.Text = "Logged out.";
