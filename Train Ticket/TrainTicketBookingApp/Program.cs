@@ -171,8 +171,14 @@ namespace TrainTicketBookingApp
             {
                 if (ex.Response != null)
                 {
+                    if (ex.Response == null)
+                        return ex.Message;
+
                     using (Stream stream = ex.Response.GetResponseStream())
-                    using (StreamReader reader = new StreamReader(stream))
+                    {
+                        if (stream == null)
+                            return ex.Message;
+                        using (StreamReader reader = new StreamReader(stream))
                     {
                         string body = reader.ReadToEnd();
                         Dictionary<string, object> data = json.Deserialize<Dictionary<string, object>>(body);
