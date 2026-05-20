@@ -252,9 +252,34 @@ namespace TrainTicketBookingApp
             }
         }
 
-        private void RegisterPassengerTodo()
+        private void RegisterPassenger()
         {
-            MessageBox.Show("Passenger registration is not connected yet. Follow the commit guide.");
+            string email = txtEmail.Text.Trim().ToLower();
+
+            if (txtName.Text.Trim() == "" || email == "" || txtPassword.Text.Trim() == "")
+            {
+                MessageBox.Show("Name, email, and password are required.");
+                return;
+            }
+
+            try
+            {
+                string response = PostApi(new Dictionary<string, string>
+        {
+            {"action",   "register_passenger"},
+            {"name",     txtName.Text.Trim()},
+            {"email",    email},
+            {"password", txtPassword.Text.Trim()},
+            {"contact",  txtContact.Text.Trim()}
+        });
+
+                Dictionary<string, object> result = json.Deserialize<Dictionary<string, object>>(response);
+                MessageBox.Show(Convert.ToString(result["message"]));
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Registration failed.\n\n" + ex.Message);
+            }
         }
     }
 
