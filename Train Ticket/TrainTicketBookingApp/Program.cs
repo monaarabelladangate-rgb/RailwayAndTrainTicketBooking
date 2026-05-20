@@ -159,7 +159,8 @@ namespace TrainTicketBookingApp
                 }
                 catch (WebException ex)
                 {
-                    throw new Exception(ReadError(ex));
+                    string msg = ReadError(ex);
+                    throw new Exception("API Request Failed: " + msg);
                 }
             }
         }
