@@ -1,0 +1,9 @@
+# Suggested .gitignore
+
+bin/
+obj/
+.vs/
+*.user
+*.suo
+php-api/railway.sqlite
+*.log
