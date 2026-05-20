@@ -595,9 +595,35 @@ namespace TrainTicketBookingApp
             gridTickets.Rows.Add("Ticket status loading will be implemented in a later commit.");
         }
 
-        private void BookTicketTodo()
+        private void BookTicket()
         {
-            MessageBox.Show("Ticket booking is not connected yet. Follow the commit guide.");
+            if (cboTrain.SelectedItem == null)
+            {
+                MessageBox.Show("Select a train first.");
+                return;
+            }
+
+            ComboItem train = cboTrain.SelectedItem as ComboItem;
+
+            try
+            {
+                string response = PostApi(new Dictionary<string, string>
+        {
+            {"action",       "book_ticket"},
+            {"passenger_id", passengerId.ToString()},
+            {"train_id",     train.Value},
+            {"travel_date",  dtTravel.Value.ToString("yyyy-MM-dd")},
+            {"seat_count",   numSeats.Value.ToString()}
+        });
+
+                Dictionary<string, object> result = json.Deserialize<Dictionary<string, object>>(response);
+                MessageBox.Show(Convert.ToString(result["message"]));
+                RefreshAll();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Booking failed.\n\n" + ex.Message);
+            }
         }
 
         private class ComboItem
