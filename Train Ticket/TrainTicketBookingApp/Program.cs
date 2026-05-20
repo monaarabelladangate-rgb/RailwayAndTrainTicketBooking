@@ -180,8 +180,8 @@ namespace TrainTicketBookingApp
                         {
                             string body = reader.ReadToEnd();
 
-                            Dictionary<string, object> data =
-                                json.Deserialize<Dictionary<string, object>>(body);
+                            Dictionary<string, object> result =
+                                json.Deserialize<Dictionary<string, object>>(response);
 
                             if (data != null && data.ContainsKey("message"))
                             {
@@ -205,12 +205,15 @@ namespace TrainTicketBookingApp
             try
             {
                 string response = PostApi(new Dictionary<string, string>
-                {
-                    {"action","login"},
-                    {"email",txtEmail.Text.Trim()},
-                    {"password",txtPassword.Text.Trim()},
-                    {"role","passenger"}
-                });
+        {
+            {"action","login"},
+            {"email",txtEmail.Text.Trim()},
+            {"password",txtPassword.Text.Trim()},
+            {"role","passenger"}
+        });
+
+                Dictionary<string, object> result =
+                    json.Deserialize<Dictionary<string, object>>(response);
 
                 if (result == null || !result.ContainsKey("user"))
                     throw new Exception("Login failed: invalid response.");
@@ -219,11 +222,13 @@ namespace TrainTicketBookingApp
 
                 if (user == null)
                     throw new Exception("Login failed: user missing.");
+
                 int id = Convert.ToInt32(user["id"]);
                 string name = Convert.ToString(user["name"]);
                 string email = Convert.ToString(user["email"]);
 
                 PassengerForm main = new PassengerForm(id, name, email);
+
                 main.FormClosed += delegate
                 {
                     if (main.Tag != null && main.Tag.ToString() == "logout")
@@ -238,7 +243,7 @@ namespace TrainTicketBookingApp
                     }
                 };
 
-
+                Hide();
                 main.Show();
             }
             catch (Exception ex)
