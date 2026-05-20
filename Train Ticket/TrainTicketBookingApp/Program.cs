@@ -500,7 +500,12 @@ namespace TrainTicketBookingApp
 
         private void LoadTrains()
         {
-            Dictionary<string, object> result = GetApi("action=list_active_trains");
+            if (!result.ContainsKey("user") || result["user"] == null)
+                throw new Exception("Invalid login response from server.");
+
+            Dictionary<string, object> user = result["user"] as Dictionary<string, object>;
+            if (user == null)
+                throw new Exception("User data is corrupted.");
             ArrayList rows = null;
 
             if (result.ContainsKey("trains"))
