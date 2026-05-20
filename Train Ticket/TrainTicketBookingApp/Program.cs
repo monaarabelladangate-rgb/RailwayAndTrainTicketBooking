@@ -171,28 +171,31 @@ namespace TrainTicketBookingApp
             {
                 if (ex.Response != null)
                 {
-                    if (ex.Response == null)
-                        return ex.Message;
-
                     using (Stream stream = ex.Response.GetResponseStream())
                     {
                         if (stream == null)
                             return ex.Message;
+
                         using (StreamReader reader = new StreamReader(stream))
-                    {
-                        string body = reader.ReadToEnd();
-                        Dictionary<string, object> data = json.Deserialize<Dictionary<string, object>>(body);
-
-                        if (data != null && data.ContainsKey("message"))
                         {
-                            return Convert.ToString(data["message"]);
-                        }
+                            string body = reader.ReadToEnd();
 
-                        return body;
+                            Dictionary<string, object> data =
+                                json.Deserialize<Dictionary<string, object>>(body);
+
+                            if (data != null && data.ContainsKey("message"))
+                            {
+                                return Convert.ToString(data["message"]);
+                            }
+
+                            return body;
+                        }
                     }
                 }
             }
-            catch { }
+            catch
+            {
+            }
 
             return ex.Message;
         }
