@@ -209,8 +209,15 @@ namespace TrainTicketBookingApp
                     {"role","passenger"}
                 });
 
-                Dictionary<string, object> result = json.Deserialize<Dictionary<string, object>>(response);
-                Dictionary<string, object> user = result["user"] as Dictionary<string, object>;
+                var result = json.Deserialize<Dictionary<string, object>>(response);
+
+                if (result == null || !result.ContainsKey("user"))
+                    throw new Exception("Login failed: invalid server response.");
+
+                var user = result["user"] as Dictionary<string, object>;
+
+                if (user == null)
+                    throw new Exception("Login failed: user data missing.");
 
                 int id = Convert.ToInt32(user["id"]);
                 string name = Convert.ToString(user["name"]);
