@@ -209,16 +209,13 @@ namespace TrainTicketBookingApp
                     {"role","passenger"}
                 });
 
-                var result = json.Deserialize<Dictionary<string, object>>(response);
-
-                if (result == null || !result.ContainsKey("user") || result["user"] == null)
-                    throw new Exception("Invalid login response from server.");
+                if (result == null || !result.ContainsKey("user"))
+                    throw new Exception("Login failed: invalid response.");
 
                 var user = result["user"] as Dictionary<string, object>;
 
                 if (user == null)
-                    throw new Exception("User data is corrupted.");
-
+                    throw new Exception("Login failed: user missing.");
                 int id = Convert.ToInt32(user["id"]);
                 string name = Convert.ToString(user["name"]);
                 string email = Convert.ToString(user["email"]);
@@ -238,7 +235,7 @@ namespace TrainTicketBookingApp
                     }
                 };
 
-                Hide();
+
                 main.Show();
             }
             catch (Exception ex)
