@@ -77,7 +77,7 @@ if (isset($_GET['logout'])) {
 }
 
 if (!isset($_SESSION['admin_id']) && $_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['form_type'] ?? '') === 'login') {
-    $email    = strtolower(trim($_POST['email'] ?? ''));
+    $email = strtolower(trim($_POST['email'] ?? ''));
     $password = trim($_POST['password'] ?? '');
 
     $stmt = $pdo->prepare("SELECT * FROM users WHERE email=? AND password=? AND role='admin' LIMIT 1");
@@ -85,7 +85,7 @@ if (!isset($_SESSION['admin_id']) && $_SERVER['REQUEST_METHOD'] === 'POST' && ($
     $admin = $stmt->fetch(PDO::FETCH_ASSOC);
 
     if ($admin) {
-        $_SESSION['admin_id']   = $admin['id'];
+        $_SESSION['admin_id'] = $admin['id'];
         $_SESSION['admin_name'] = $admin['name'];
         header('Location: index.php');
         exit;
@@ -94,7 +94,8 @@ if (!isset($_SESSION['admin_id']) && $_SERVER['REQUEST_METHOD'] === 'POST' && ($
     }
 }
 
-if (!isset($_SESSION['admin_id'])): ?>
+if (!isset($_SESSION['admin_id'])):
+?>
 <!DOCTYPE html>
 <html>
 <head>
@@ -117,7 +118,7 @@ button{width:100%;margin-top:18px;padding:13px;border:0;border-radius:14px;backg
 <div class="card">
     <div class="brand">RAIL</div>
     <h1>Admin Portal</h1>
-    <p>Railway Management System</p>
+    <p>Starter management access</p>
     <?php if($message): ?><div class="msg"><?=htmlspecialchars($message)?></div><?php endif; ?>
     <form method="post">
         <input type="hidden" name="form_type" value="login">
@@ -135,101 +136,18 @@ exit;
 endif;
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $type = $_POST['form_type'] ?? '';
-
-    // Add Train
-    if ($type === 'add_train') {
-        $train_code          = trim($_POST['train_code']          ?? '');
-        $train_name          = trim($_POST['train_name']          ?? '');
-        $origin_station      = trim($_POST['origin_station']      ?? '');
-        $destination_station = trim($_POST['destination_station'] ?? '');
-        $departure_time      = trim($_POST['departure_time']      ?? '');
-        $arrival_time        = trim($_POST['arrival_time']        ?? '');
-        $fare                = (float)($_POST['fare']             ?? 0);
-        $available_seats     = (int)($_POST['available_seats']    ?? 0);
-        $status              = trim($_POST['status']              ?? 'Active');
-
-        if ($train_code === '' || $train_name === '' || $origin_station === '' || $destination_station === '') {
-            $message = 'All train fields are required.';
-        } else {
-            $stmt = $pdo->prepare("INSERT INTO trains(train_code,train_name,origin_station,destination_station,departure_time,arrival_time,fare,available_seats,status,created_at)
-                                   VALUES(?,?,?,?,?,?,?,?,?,?)");
-            $stmt->execute([$train_code,$train_name,$origin_station,$destination_station,$departure_time,$arrival_time,$fare,$available_seats,$status,date('Y-m-d H:i:s')]);
-            $message = 'Train saved successfully.';
-        }
-    }
-
-    // Update Train
-    if ($type === 'update_train') {
-        $id = (int)($_POST['id'] ?? 0);
-        if ($id > 0) {
-            $stmt = $pdo->prepare("UPDATE trains SET train_code=?,train_name=?,origin_station=?,destination_station=?,departure_time=?,arrival_time=?,fare=?,available_seats=?,status=? WHERE id=?");
-            $stmt->execute([
-                trim($_POST['train_code']          ?? ''),
-                trim($_POST['train_name']          ?? ''),
-                trim($_POST['origin_station']      ?? ''),
-                trim($_POST['destination_station'] ?? ''),
-                trim($_POST['departure_time']      ?? ''),
-                trim($_POST['arrival_time']        ?? ''),
-                (float)($_POST['fare']             ?? 0),
-                (int)($_POST['available_seats']    ?? 0),
-                trim($_POST['status']              ?? 'Active'),
-                $id
-            ]);
-            $message = 'Train updated successfully.';
-        }
-    }
-
-    // Delete Train
-    if ($type === 'delete_train') {
-        $id = (int)($_POST['id'] ?? 0);
-        if ($id > 0) {
-            $stmt = $pdo->prepare("DELETE FROM trains WHERE id=?");
-            $stmt->execute([$id]);
-            $message = 'Train deleted.';
-        }
-    }
-
-    // FIX 4: Replaced ticket_status stub with real DB update
-    if ($type === 'ticket_status') {
-        $id             = (int)($_POST['id']             ?? 0);
-        $bookingStatus  = trim($_POST['booking_status']  ?? '');
-        $paymentStatus  = trim($_POST['payment_status']  ?? '');
-
-        $allowedBooking = ['Pending', 'Confirmed', 'Cancelled'];
-        $allowedPayment = ['Unpaid', 'Paid'];
-
-        if ($id > 0
-            && in_array($bookingStatus, $allowedBooking, true)
-            && in_array($paymentStatus, $allowedPayment, true)
-        ) {
-            $stmt = $pdo->prepare("UPDATE tickets SET booking_status=?, payment_status=? WHERE id=?");
-            $stmt->execute([$bookingStatus, $paymentStatus, $id]);
-            $message = 'Ticket #' . $id . ' status updated.';
-        } else {
-            $message = 'Invalid ticket status values.';
-        }
-    }
+    $message = 'Feature not yet connected. Follow the commit guide to implement this action.';
 }
 
-$trains     = $pdo->query("SELECT * FROM trains ORDER BY id DESC")->fetchAll(PDO::FETCH_ASSOC);
+$trains = $pdo->query("SELECT * FROM trains ORDER BY id DESC")->fetchAll(PDO::FETCH_ASSOC);
 $passengers = $pdo->query("SELECT id,name,email,contact,created_at FROM users WHERE role='passenger' ORDER BY id DESC")->fetchAll(PDO::FETCH_ASSOC);
-
-// FIX 4 + FIX 5: Load real tickets with joins; count is now dynamic
-$tickets = $pdo->query(
-    "SELECT tickets.*, users.name AS passenger_name, users.email AS passenger_email,
-            trains.train_code, trains.train_name, trains.origin_station, trains.destination_station
-     FROM tickets
-     JOIN users  ON users.id  = tickets.passenger_id
-     JOIN trains ON trains.id = tickets.train_id
-     ORDER BY tickets.id DESC"
-)->fetchAll(PDO::FETCH_ASSOC);
+$tickets = [];
 ?>
 <!DOCTYPE html>
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Railway Admin</title>
+<title>Railway Admin Starter</title>
 <style>
 *{box-sizing:border-box}
 body{margin:0;font-family:Segoe UI,Arial,sans-serif;background:#eef7f2;color:#0f172a}
@@ -252,30 +170,17 @@ body{margin:0;font-family:Segoe UI,Arial,sans-serif;background:#eef7f2;color:#0f
 .grid{display:grid;grid-template-columns:380px 1fr;gap:22px;align-items:start}
 .panel{background:white;border-radius:28px;padding:22px;box-shadow:0 16px 40px rgba(15,23,42,.10);margin-bottom:22px}
 .panel h3{margin:0 0 17px;color:#047857;font-size:22px}
-.notice{background:#d1fae5;color:#065f46;padding:13px 15px;border-radius:15px;margin-bottom:18px;font-weight:900}
-.warn{background:#fef3c7;color:#92400e;padding:13px 15px;border-radius:15px;margin-bottom:18px;font-weight:900}
+.notice{background:#fef3c7;color:#92400e;padding:13px 15px;border-radius:15px;margin-bottom:18px;font-weight:900}
 label{display:block;color:#334155;font-weight:900;font-size:12px;margin:10px 0 6px}
 input,select{width:100%;min-height:40px;padding:10px;border:1px solid #cbd5e1;border-radius:14px;background:#f8fafc}
-button{width:100%;border:0;border-radius:14px;padding:12px;background:#047857;color:white;font-weight:900;margin-top:12px;cursor:pointer}
-button.danger{background:#991b1b}
-button.secondary{background:#1e40af}
+button{width:100%;border:0;border-radius:14px;padding:12px;background:#047857;color:white;font-weight:900;margin-top:12px}
 .table-wrap{overflow:auto}
-table{width:100%;border-collapse:separate;border-spacing:0 8px;min-width:720px}
+table{width:100%;border-collapse:separate;border-spacing:0 10px;min-width:720px}
 th{text-align:left;color:#64748b;text-transform:uppercase;font-size:12px;padding:0 10px}
-td{background:#f8fafc;padding:10px;border-top:1px solid #e2e8f0;border-bottom:1px solid #e2e8f0;font-size:13px}
+td{background:#f8fafc;padding:12px 10px;border-top:1px solid #e2e8f0;border-bottom:1px solid #e2e8f0}
 td:first-child{border-left:1px solid #e2e8f0;border-radius:14px 0 0 14px;font-weight:900}
 td:last-child{border-right:1px solid #e2e8f0;border-radius:0 14px 14px 0}
-.badge{display:inline-block;background:#d1fae5;color:#065f46;border-radius:999px;padding:4px 9px;font-weight:900;font-size:11px}
-.badge.inactive{background:#fee2e2;color:#991b1b}
-.badge.confirmed{background:#dbeafe;color:#1e40af}
-.badge.cancelled{background:#fef3c7;color:#92400e}
-.badge.paid{background:#d1fae5;color:#065f46}
-.train-card{border:1px solid #e2e8f0;border-radius:18px;padding:16px;margin-bottom:14px;background:#f8fafc}
-.train-card h4{margin:0 0 8px;color:#047857}
-.two-col{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-details summary{cursor:pointer;font-weight:900;color:#047857;margin-bottom:8px;list-style:none}
-details summary::before{content:'▶ '}
-details[open] summary::before{content:'▼ '}
+.badge{display:inline-block;background:#d1fae5;color:#065f46;border-radius:999px;padding:5px 9px;font-weight:900;font-size:12px}
 @media(max-width:1000px){.layout{grid-template-columns:1fr}.grid{grid-template-columns:1fr}.stats{grid-template-columns:1fr}}
 </style>
 </head>
@@ -283,8 +188,8 @@ details[open] summary::before{content:'▼ '}
 <div class="layout">
 <aside class="sidebar">
     <div class="logo">RAIL</div>
-    <h1>Railway Admin</h1>
-    <p>Manage trains, passengers, and bookings.</p>
+    <h1>Railway Admin Starter</h1>
+    <p>Basic dashboard prepared for step-by-step development.</p>
     <div class="side-card"><b>Signed in</b><?=htmlspecialchars($_SESSION['admin_name'])?></div>
     <a class="logout" href="?logout=1">Logout Admin</a>
 </aside>
@@ -292,95 +197,53 @@ details[open] summary::before{content:'▼ '}
 <main class="main">
     <div class="hero">
         <h2>Operations Dashboard</h2>
-        <p>Ticket management is now fully connected.</p>
+        <p>Starter version for train scheduling and ticket management.</p>
     </div>
 
-    <?php if($message): ?>
-    <div class="<?=strpos($message,'required')!==false||strpos($message,'Invalid')!==false?'warn':'notice'?>">
-        <?=htmlspecialchars($message)?>
-    </div>
-    <?php endif; ?>
+    <?php if($message): ?><div class="notice"><?=htmlspecialchars($message)?></div><?php endif; ?>
 
     <div class="stats">
         <div class="stat"><span>Trains</span><strong><?=count($trains)?></strong></div>
         <div class="stat"><span>Passengers</span><strong><?=count($passengers)?></strong></div>
-        <!-- FIX 5: Tickets count now reads real count from loaded $tickets array -->
-        <div class="stat"><span>Tickets</span><strong><?=count($tickets)?></strong></div>
+        <div class="stat"><span>Tickets</span><strong>0</strong></div>
     </div>
 
     <div class="grid">
-
-        <section>
-            <div class="panel">
-                <h3>Add Train</h3>
-                <form method="post">
-                    <input type="hidden" name="form_type" value="add_train">
-                    <label>Code</label><input name="train_code" placeholder="RLY-400" required>
-                    <label>Train Name</label><input name="train_name" placeholder="Capital Express" required>
-                    <label>Origin</label><input name="origin_station" placeholder="Manila" required>
-                    <label>Destination</label><input name="destination_station" placeholder="Baguio" required>
-                    <label>Departure</label><input name="departure_time" placeholder="07:00 AM" required>
-                    <label>Arrival</label><input name="arrival_time" placeholder="12:00 PM" required>
-                    <label>Fare (₱)</label><input name="fare" type="number" step="0.01" placeholder="850" required>
-                    <label>Seats</label><input name="available_seats" type="number" placeholder="80" required>
-                    <label>Status</label>
-                    <select name="status">
-                        <option>Active</option>
-                        <option>Inactive</option>
-                    </select>
-                    <button type="submit">Save Train</button>
-                </form>
-            </div>
+        <section class="panel">
+            <h3>Add Train</h3>
+            <form method="post">
+                <input type="hidden" name="form_type" value="add_train">
+                <label>Code</label><input name="train_code" placeholder="RLY-400">
+                <label>Train Name</label><input name="train_name" placeholder="Capital Express">
+                <label>Origin</label><input name="origin_station" placeholder="Manila">
+                <label>Destination</label><input name="destination_station" placeholder="Baguio">
+                <label>Departure</label><input name="departure_time" placeholder="07:00 AM">
+                <label>Arrival</label><input name="arrival_time" placeholder="12:00 PM">
+                <label>Fare</label><input name="fare" type="number" step="0.01" placeholder="850">
+                <label>Seats</label><input name="available_seats" type="number" placeholder="80">
+                <label>Status</label><select name="status"><option>Active</option><option>Inactive</option></select>
+                <button>Save Train</button>
+            </form>
         </section>
 
         <section>
-
             <div class="panel">
                 <h3>Train Records</h3>
-                <?php foreach($trains as $t): ?>
-                <div class="train-card">
-                    <h4>
-                        <?=htmlspecialchars($t['train_code'].' — '.$t['train_name'])?>
-                        <span class="badge <?=strtolower($t['status'])==='inactive'?'inactive':''?>">
-                            <?=htmlspecialchars($t['status'])?>
-                        </span>
-                    </h4>
-                    <small style="color:#64748b">
-                        <?=htmlspecialchars($t['origin_station'])?> → <?=htmlspecialchars($t['destination_station'])?>
-                        &nbsp;|&nbsp; <?=htmlspecialchars($t['departure_time'])?> – <?=htmlspecialchars($t['arrival_time'])?>
-                        &nbsp;|&nbsp; ₱<?=number_format((float)$t['fare'],2)?>
-                        &nbsp;|&nbsp; <?=htmlspecialchars($t['available_seats'])?> seats
-                    </small>
-                    <details style="margin-top:10px">
-                        <summary>Edit / Delete</summary>
-                        <form method="post" style="margin-bottom:10px">
-                            <input type="hidden" name="form_type" value="update_train">
-                            <input type="hidden" name="id" value="<?=$t['id']?>">
-                            <div class="two-col">
-                                <div><label>Code</label><input name="train_code" value="<?=htmlspecialchars($t['train_code'])?>"></div>
-                                <div><label>Train Name</label><input name="train_name" value="<?=htmlspecialchars($t['train_name'])?>"></div>
-                                <div><label>Origin</label><input name="origin_station" value="<?=htmlspecialchars($t['origin_station'])?>"></div>
-                                <div><label>Destination</label><input name="destination_station" value="<?=htmlspecialchars($t['destination_station'])?>"></div>
-                                <div><label>Departure</label><input name="departure_time" value="<?=htmlspecialchars($t['departure_time'])?>"></div>
-                                <div><label>Arrival</label><input name="arrival_time" value="<?=htmlspecialchars($t['arrival_time'])?>"></div>
-                                <div><label>Fare (₱)</label><input name="fare" type="number" step="0.01" value="<?=htmlspecialchars($t['fare'])?>"></div>
-                                <div><label>Seats</label><input name="available_seats" type="number" value="<?=htmlspecialchars($t['available_seats'])?>"></div>
-                            </div>
-                            <label>Status</label>
-                            <select name="status">
-                                <option <?=$t['status']==='Active'?'selected':''?>>Active</option>
-                                <option <?=$t['status']==='Inactive'?'selected':''?>>Inactive</option>
-                            </select>
-                            <button class="secondary" type="submit">Update Train</button>
-                        </form>
-                        <form method="post" onsubmit="return confirm('Delete this train permanently?')">
-                            <input type="hidden" name="form_type" value="delete_train">
-                            <input type="hidden" name="id" value="<?=$t['id']?>">
-                            <button class="danger" type="submit">Delete Train</button>
-                        </form>
-                    </details>
+                <div class="table-wrap">
+                    <table>
+                        <tr><th>ID</th><th>Train</th><th>Route</th><th>Time</th><th>Fare</th><th>Status</th></tr>
+                        <?php foreach($trains as $t): ?>
+                        <tr>
+                            <td>#<?=$t['id']?></td>
+                            <td><?=htmlspecialchars($t['train_code'].' - '.$t['train_name'])?></td>
+                            <td><?=htmlspecialchars($t['origin_station'].' to '.$t['destination_station'])?></td>
+                            <td><?=htmlspecialchars($t['departure_time'].' - '.$t['arrival_time'])?></td>
+                            <td>₱<?=number_format((float)$t['fare'],2)?></td>
+                            <td><span class="badge"><?=htmlspecialchars($t['status'])?></span></td>
+                        </tr>
+                        <?php endforeach; ?>
+                    </table>
                 </div>
-                <?php endforeach; ?>
             </div>
 
             <div class="panel">
@@ -400,71 +263,10 @@ details[open] summary::before{content:'▼ '}
                 </div>
             </div>
 
-            <!-- FIX 4 + FIX 5: Real ticket table with live status update forms -->
             <div class="panel">
                 <h3>Ticket Management</h3>
-                <?php if(empty($tickets)): ?>
-                <p style="color:#64748b;font-weight:700">No tickets yet. Passengers can book via the C# app.</p>
-                <?php else: ?>
-                <div class="table-wrap">
-                    <table>
-                        <tr>
-                            <th>ID</th>
-                            <th>Passenger</th>
-                            <th>Train</th>
-                            <th>Route</th>
-                            <th>Date</th>
-                            <th>Seats</th>
-                            <th>Total</th>
-                            <th>Booking</th>
-                            <th>Payment</th>
-                            <th>Action</th>
-                        </tr>
-                        <?php foreach($tickets as $tk): ?>
-                        <tr>
-                            <td>#<?=$tk['id']?></td>
-                            <td><?=htmlspecialchars($tk['passenger_name'])?></td>
-                            <td><?=htmlspecialchars($tk['train_code'].' '.$tk['train_name'])?></td>
-                            <td><?=htmlspecialchars($tk['origin_station'].' → '.$tk['destination_station'])?></td>
-                            <td><?=htmlspecialchars($tk['travel_date'])?></td>
-                            <td><?=htmlspecialchars($tk['seat_count'])?></td>
-                            <td>₱<?=number_format((float)$tk['total_amount'],2)?></td>
-                            <td>
-                                <?php
-                                $bc = '';
-                                if($tk['booking_status']==='Confirmed') $bc='confirmed';
-                                elseif($tk['booking_status']==='Cancelled') $bc='cancelled';
-                                ?>
-                                <span class="badge <?=$bc?>"><?=htmlspecialchars($tk['booking_status'])?></span>
-                            </td>
-                            <td>
-                                <span class="badge <?=$tk['payment_status']==='Paid'?'paid':''?>">
-                                    <?=htmlspecialchars($tk['payment_status'])?>
-                                </span>
-                            </td>
-                            <td>
-                                <form method="post">
-                                    <input type="hidden" name="form_type" value="ticket_status">
-                                    <input type="hidden" name="id" value="<?=$tk['id']?>">
-                                    <select name="booking_status" style="margin-bottom:4px">
-                                        <option <?=$tk['booking_status']==='Pending'   ?'selected':''?>>Pending</option>
-                                        <option <?=$tk['booking_status']==='Confirmed' ?'selected':''?>>Confirmed</option>
-                                        <option <?=$tk['booking_status']==='Cancelled' ?'selected':''?>>Cancelled</option>
-                                    </select>
-                                    <select name="payment_status" style="margin-bottom:4px">
-                                        <option <?=$tk['payment_status']==='Unpaid'?'selected':''?>>Unpaid</option>
-                                        <option <?=$tk['payment_status']==='Paid'  ?'selected':''?>>Paid</option>
-                                    </select>
-                                    <button type="submit" style="padding:7px;font-size:12px">Save</button>
-                                </form>
-                            </td>
-                        </tr>
-                        <?php endforeach; ?>
-                    </table>
-                </div>
-                <?php endif; ?>
+                <div class="notice">Ticket records and status updates will be connected in later commits.</div>
             </div>
-
         </section>
     </div>
 </main>
