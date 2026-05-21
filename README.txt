@@ -1,49 +1,33 @@
-RAILWAY STARTER SYSTEM WITH COMMIT ROADMAP
+# Railway Management System
 
-This is an early-stage incomplete version of the working Railway system.
+## Overview
+A web-based Railway Management System built with PHP and SQLite.
+It serves as the **station operations board** that manages train schedules,
+routes, and passenger tickets. It is connected to the Train Ticket Booking
+System through a PHP REST API.
 
-Purpose:
-Students should build the project step by step and commit each meaningful change.
+## Features
+- View all active train schedules
+- Add, edit, and delete train records
+- View passenger manifest and ticket records
+- Manage train routes (origin, destination, departure, arrival)
+- Manage seat availability and fare
+- REST API endpoint for C# integration (`api.php`)
+- SQLite database (no MySQL setup required)
 
-System Roles:
-PHP/Web: Railway Admin Management
-C# Windows Forms: Passenger Ticket Booking
-Database: SQLite
-Connection: PHP API
-
-Already working:
-- PHP server runs using php -S localhost:8000
-- SQLite database is created automatically
-- Admin login/logout works
-- API ping works
-- Passenger login works
-- Active train listing works in C#
-- PHP admin can view existing trains and passengers
-
-Still incomplete:
-- Passenger registration
-- Admin train CRUD
-- Passenger ticket booking
-- Passenger ticket status listing
-- Admin ticket management
-- Final validation and testing
-
-Run PHP:
+## How to Run
+### Option A — Using Git Bash
+```bash
 cd php-api
 php -S localhost:8000
+```
 
-Open PHP Admin:
-http://localhost:8000/index.php
+### Option B — Using XAMPP PHP
+```bash
+/c/xampp/php/php.exe -S localhost:8000
 
-Open C#:
-csharp\TrainTicketBookingApp.sln
 
 Default Admin:
 admin@railway.test
 admin123
 
-Default Passenger:
-passenger@railway.test
-passenger123
-
-Read the notes folder before making commits.
