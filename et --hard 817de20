@@ -1,0 +1,53 @@
+[33m80aea29[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m, [m[1;31morigin/main[m[33m)[m HEAD@{0}: reset: moving to 80aea29
+[33m67185bc[m HEAD@{1}: commit: Remove models folder and database.php for cleanup
+[33m817de20[m HEAD@{2}: commit: Add SQLite database file
+[33mfe07868[m HEAD@{3}: commit: Add models folder
+[33mf13b33d[m HEAD@{4}: commit: Remove models.zip
+[33m27bfb9a[m HEAD@{5}: commit: Remove models.zip file
+[33m8b0923a[m HEAD@{6}: pull origin main --rebase (finish): returning to refs/heads/main
+[33m8b0923a[m HEAD@{7}: pull origin main --rebase (pick): Final fix before pull
+[33m20516ef[m HEAD@{8}: pull origin main --rebase (pick): Removed zip and added models folder
+[33md67e44b[m HEAD@{9}: pull origin main --rebase (pick): Added database and models
+[33me8bd32f[m HEAD@{10}: pull origin main --rebase (start): checkout e8bd32f9df24e4d48b701faeea580a6beae6dbd1
+[33m28285f5[m HEAD@{11}: commit: Final fix before pull
+[33m27cf4e8[m HEAD@{12}: commit: Removed zip and added models folder
+[33m811d894[m HEAD@{13}: commit: Added database and models
+[33m13ac5d1[m HEAD@{14}: commit: Connect ticket management panel with live records and status update forms
+[33m56733bc[m HEAD@{15}: commit: Connect train add, update, and delete forms to SQLite database
+[33m5e9494b[m HEAD@{16}: checkout: moving from master to main
+[33mb20e677[m[33m ([m[1;31morigin/master[m[33m, [m[1;32mmaster[m[33m)[m HEAD@{17}: commit: Connect Submit Booking button to book ticket API
+[33m1166698[m HEAD@{18}: commit: Connect Register button to passenger registration API
+[33me622aa0[m HEAD@{19}: commit: Fix LoadTrains using wrong result variable instead of calling GetApi
+[33mbda666a[m HEAD@{20}: commit: Deserialize login API response before accessing user data
+[33mbd9c8ab[m HEAD@{21}: commit: Fix broken ReadError braces and stream handling
+[33m39d9dfd[m HEAD@{22}: checkout: moving from main to master
+[33m5e9494b[m HEAD@{23}: pull origin main: Fast-forward
+[33m87804b4[m HEAD@{24}: checkout: moving from master to main
+[33m39d9dfd[m HEAD@{25}: commit: feat(data): introduce ComboItem model for structured dropdown selection
+[33mdbe0366[m HEAD@{26}: commit: fix(auth): improve login flow and form transition handling
+[33m673f556[m HEAD@{27}: commit: feat(ui): enforce password masking and improve input security
+[33maf832b0[m HEAD@{28}: checkout: moving from main to master
+[33m87804b4[m HEAD@{29}: commit: Improve API validation and exception handling
+[33m2a91db0[m HEAD@{30}: commit: Handle seat restoration during ticket cancellation
+[33mca1f852[m HEAD@{31}: checkout: moving from master to main
+[33maf832b0[m HEAD@{32}: commit: refactor(api): simplify POST request body construction
+[33m259046d[m HEAD@{33}: commit: fix(ui): safely retrieve selected train item from ComboBox
+[33mb518d75[m HEAD@{34}: commit: fix(api): handle null response stream in error reader
+[33m115acd5[m HEAD@{35}: commit: fix(network): improve WebClient exception handling and API error messages
+[33m17ab524[m HEAD@{36}: commit: fix(auth): prevent crash on invalid or missing login response
+[33m934ce46[m HEAD@{37}: commit: fix(api): add null safety for API response parsing (trains and user data)
+[33mf3f1061[m HEAD@{38}: checkout: moving from main to master
+[33mca1f852[m HEAD@{39}: commit: Implement ticket status and payment status updates
+[33m8aa569c[m HEAD@{40}: commit: Implement ticket listing with passenger and train details
+[33m2cff3b1[m HEAD@{41}: commit: Add database transactions to prevent seat overbooking
+[33mf76c3b8[m HEAD@{42}: commit: Implement ticket booking with seat availability validation
+[33maf87259[m HEAD@{43}: commit: Add passenger listing endpoint for admin dashboard
+[33m8f49899[m HEAD@{44}: commit: Implement passenger registration endpoint with validation
+[33m80aea29[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m, [m[1;31morigin/main[m[33m)[m HEAD@{45}: commit: Initialize Railway API with SQLite database setup
+[33m15f8fb7[m HEAD@{46}: commit: Keep Railway only in main branch
+[33mf0dc84f[m HEAD@{47}: checkout: moving from master to main
+[33mf3f1061[m HEAD@{48}: commit: Remove unnecessary folders from master
+[33mf0dc84f[m HEAD@{49}: checkout: moving from master to master
+[33mf0dc84f[m HEAD@{50}: checkout: moving from main to master
+[33mf0dc84f[m HEAD@{51}: Branch: renamed refs/heads/master to refs/heads/main
+[33mf0dc84f[m HEAD@{53}: commit (initial): Initial commit
